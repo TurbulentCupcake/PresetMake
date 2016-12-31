@@ -54,10 +54,10 @@ def checkFile(filename):
 					if info[0:3] == 'PNO':
 						p = presets()
 						p.setfilename(filename)
-						p.setpno(int(info[-1]))
+						p.setpno(int(info.split('=')[-1]))
 						presetList.append(p)
 					elif info[0:4] == 'LINE':
-						p.setlines(int(info[-1]))
+						p.setlines(int(info.split('=')	[-1]))
 					else:
 						p.addpresetCode(info)
 
@@ -71,16 +71,18 @@ def setPreset(filename, presets):
 	print codeLines
 	print "Enter preset number : "
 	presetNumber = int(raw_input(">>>"))
+	print [p.pno for p in presets]
 	if not presetNumber in [p.pno for p in presets]:
 		print "Preset Number Not Found"
 	else:
-		for pos in range(presets[presetNumber].editline, presets[presetNumber].editline + len(presets[presetNumber].presetCode),1):
+		for pos in range(presets[presetNumber-1].editline, presets[presetNumber-1].editline + len(presets[presetNumber-1].presetCode),1):
 			#codeLines[pos] = presets[presetNumber].presetCode[pos] + '\n'
 			print pos
-			codeLines[pos] = presets[presetNumber].presetCode[pos - presets[presetNumber].editline + 1]
+			codeLines[pos-1] = presets[presetNumber-1].presetCode[pos - presets[presetNumber-1].editline] + '\n'
 
-		# fp = open(filename,'w')
-		# fp.write(codeLines)
+		fp = open('trial.txt','w')
+		for c in codeLines:
+			fp.write(c)
 		# print presets[presetNumber].editline
 		print codeLines
 
