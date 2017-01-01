@@ -22,8 +22,26 @@ if not os.path.isdir('./presets'):
 # the presets and exit the program. 
 
 # Get file name as argument
-filename = sys.argv[1]
-option = sys.argv[2]
+
+try: 
+    filename = sys.argv[1]
+except:
+	print "Enter a valid file name"
+	exit(0)
+# Check if file exists
+if not os.path.exists(filename):
+	print "File doesn't exist"
+	exit(0)
+
+try:
+	option = sys.argv[2]
+except: 
+	print "Enter a valid option (use -h for help)\n"
+	exit(0)
+
+if option not in ['-v','-s','-a','-h']:
+	print "Invalid Option (use -h for help)\n"
+	exit(0)
 
 # check if the preset for file exists in our 
 # our presets folder. the checkfile function
@@ -41,14 +59,18 @@ if option == '-v': #view presets
 if option == '-s': #set preset
     fc.setPreset(filename, presets)
 
+if option == '-a': #add preset
+    fc.addPreset(filename)
+
+if option == '-h': #display help
+	print "-v : view presets for existing file"
+	print "-s : set preset from existing presets"
+	print "-a : add new presets"
+	print "-h : help 	"
 
 
 
 
 
 
-
-
-
-
-
+# Copyright Adithya Murali

@@ -2,6 +2,7 @@
 # we declare and define all necessary fucntions
 # required by the exec.py program
 import os
+import sys
 
 
 # the presets class gets data from the checkFile function
@@ -33,17 +34,27 @@ def checkFile(filename):
 	# its presets. If it doesn't, create a preset
 	# file with the filename
     if not os.path.exists('presets/%s.preset'%(filename)):
-		print "Existing preset does not exist\n"
-		print "Creating a new preset\n"
+		print "Existing preset file does not exist"
+		print "Creating a new preset file.."
 		open('presets/%s.preset'%(filename),'w+')
-		return False
+		print "Would you like to add a new preset?"
+		choice = raw_input("Enter y or n:")
+		if choice == 'y':
+			addPreset(filename)
+		elif choice == 'n':
+			print "Exiting"
+			exit(0)
+		else:
+			print "Invalid option, Exiting"
+			exit(0)
+		return None
     else:
 		with open('presets/%s.preset'%(filename),'r') as fp:
 			# presetInfo holds the preset information
 			# about a file if it is found.
 			presetInfo = fp.readlines()
 			presetInfo = [x[1:len(x)-1] for x in presetInfo]
-			print presetInfo
+			# print presetInfo
 
 			# # iterate through the presetInfo list and
 			# # add each preset
@@ -87,8 +98,37 @@ def setPreset(filename, presets):
 		print codeLines
 
 
+def addPreset(filename):
+    
+    # get the list of presets for the filename
+    presetList = checkFile(filename)
 
-	
+    if len(presetList) == 0:
+    	pno = 1
+    else:
+    	pno = len(presetList)+1
+
+    # Getting the line and code from the user
+    print "Enter line to begin edit"
+    lineNo = int(raw_input(">>"))
+
+    print "Enter/Paste code to swap (to finish input, press CTRL+D for linux/mac or CTRL+Z for windows"
+    code = sys.stdin.readlines()
+
+    # Add new data into the preset file
+    print "Adding new data into preset file..."
+    f = open('presets/%s.preset'%(filename),'a')
+    f.write('\n#PNO=%d'%pno)
+    f.write('\n#LINE=%d'%lineNo)
+    for c in code:
+    	f.write('\n+%s'%c)
+    print "Done!"
+
+
+
+
+  #Copyright Adithya Murali
+
 
 	
 
