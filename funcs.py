@@ -36,7 +36,8 @@ def checkFile(filename):
     if not os.path.exists('presets/%s.preset'%(filename)):
 		print "Existing preset file does not exist"
 		print "Creating a new preset file.."
-		open('presets/%s.preset'%(filename),'w+')
+		f = open('presets/%s.preset'%(filename),'w+')
+		f.write('#PRESETS')
 		print "Would you like to add a new preset?"
 		choice = raw_input("Enter y or n:")
 		if choice == 'y':
@@ -60,42 +61,46 @@ def checkFile(filename):
 			# # add each preset
 			presetList = []
 
-			if presetInfo[0] == 'PRESETS':
-				for info in presetInfo[1:]:
-					if info[0:3] == 'PNO':
-						p = presets()
-						p.setfilename(filename)
-						p.setpno(int(info.split('=')[-1]))
-						presetList.append(p)
-					elif info[0:4] == 'LINE':
-						p.setlines(int(info.split('=')	[-1]))
-					else:
-						p.addpresetCode(info)
+			try:
+				if presetInfo[0] == 'PRESETS':
+					for info in presetInfo[1:]:
+						if info[0:3] == 'PNO':
+							p = presets()
+							p.setfilename(filename)
+							p.setpno(int(info.split('=')[-1]))
+							presetList.append(p)
+						elif info[0:4] == 'LINE':
+							p.setlines(int(info.split('=')	[-1]))
+						else:
+							p.addpresetCode(info)	
+			except:
+				print "No existing presets found for",filename
 
-			return presetList
+			return presetList	
 
 
 def setPreset(filename, presets):
 	f = open('%s'%(filename))
 	codeLines = f.readlines()
 	# codeLines = [code[:len(code)-1] for code in codeLines]
-	print codeLines
+	# print codeLines
 	print "Enter preset number : "
 	presetNumber = int(raw_input(">>>"))
-	print [p.pno for p in presets]
+	# print [p.pno for p in presets]
 	if not presetNumber in [p.pno for p in presets]:
 		print "Preset Number Not Found"
 	else:
 		for pos in range(presets[presetNumber-1].editline, presets[presetNumber-1].editline + len(presets[presetNumber-1].presetCode),1):
 			#codeLines[pos] = presets[presetNumber].presetCode[pos] + '\n'
-			print pos
+			# print pos
 			codeLines[pos-1] = presets[presetNumber-1].presetCode[pos - presets[presetNumber-1].editline] + '\n'
 
-		fp = open('trial.txt','w')
+		fp = open(filename,'w')
 		for c in codeLines:
 			fp.write(c)
+		print "Code has been swapped"
 		# print presets[presetNumber].editline
-		print codeLines
+		# print codeLines
 
 
 def addPreset(filename):
@@ -112,7 +117,7 @@ def addPreset(filename):
     print "Enter line to begin edit"
     lineNo = int(raw_input(">>"))
 
-    print "Enter/Paste code to swap (to finish input, press CTRL+D for linux/mac or CTRL+Z for windows"
+    print "Enter/Paste code to swap (to finish input, press CTRL+D for linux/mac or CTRL+Z for windows)"
     code = sys.stdin.readlines()
 
     # Add new data into the preset file
@@ -127,7 +132,7 @@ def addPreset(filename):
 
 
 
-  #Copyright Adithya Murali
+  #Copyright Adithya Murali	
 
 
 	

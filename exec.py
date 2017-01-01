@@ -50,6 +50,10 @@ if option not in ['-v','-s','-a','-h']:
 presets = fc.checkFile(filename)
 
 if option == '-v': #view presets
+	
+	if not presets:
+		exit(0)
+
 	for preset in presets:
 		print "Filename : ",preset.filename
 		print "Preset No : ",preset.pno
