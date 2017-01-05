@@ -12,7 +12,6 @@ import sys
 # editlines : has the lines we need to edit
 # contains the presets 
 # code : contains the code we need to edit
-previousPreset = None
 
 
 class presets:
@@ -36,7 +35,7 @@ class presets:
     def getNumLines(self):
     	return self.numLines
     def getStartLine(self):
-    	return self.lineNo
+    	return self.editline
 
 
 def checkFile(filename):
@@ -46,12 +45,15 @@ def checkFile(filename):
     if not os.path.exists('presets/%s.preset'%(filename)):
 		print "Existing preset file does not exist"
 		print "Creating a new preset file.."
+		print 'step2'
 		f = open('presets/%s.preset'%(filename),'w+')
 		f.write('#PRESETS\n')
 		f.write('#PREV=-1\n')
+		f.close()
 		print "Would you like to add a new preset?"
 		choice = raw_input("Enter y or n:")
 		if choice == 'y':
+			print 'step3'
 			addPreset(filename)
 		elif choice == 'n':
 			print "Exiting"
@@ -64,17 +66,26 @@ def checkFile(filename):
 		with open('presets/%s.preset'%(filename),'r') as fp:
 			# presetInfo holds the preset information
 			# about a file if it is found.
+			#print fp.readlines()
+			print 'step5'
+			global previousPreset
+
+		#		print fp.readlines()
 			presetInfo = fp.readlines()
+			print presetInfo
 			presetInfo = [x[1:len(x)-1] for x in presetInfo]
 			# print presetInfo
 
 			# # iterate through the presetInfo list and
 			# # add each preset
 			presetList = []
+			print presetInfo
 
 			# try:
 			if presetInfo[0] == 'PRESETS':
 				for info in presetInfo[1:]:
+					# print 'Once'
+					# print info
 					if info[0:3] == 'PNO':
 						p = presets()
 						p.setfilename(filename)
@@ -85,8 +96,10 @@ def checkFile(filename):
 					elif info[0:4] == 'PREV':
 						print info.split('=')
 						previousPreset = int(info.split('=')[-1])
-					else:
-						p.addpresetCode(info)	
+					elif info[0:1] == '+':
+						print 'Im here'
+						p.addpresetCode(info[1:])
+						
 		# except:
 			# 	print "Quit tampering with the preset file, child."
 
@@ -98,7 +111,9 @@ def checkFile(filename):
 def setPreset(filename, presets):
 	f = open('%s'%(filename))
 	codeLines = f.readlines()
-	codeLines = removePreviousPreset(codeLines,presets)
+	codeLines = removePreviousPreset(codeLines,presets,previousPreset)
+	print codeLines[0:100]
+#	print codeLines
 	# codeLines = [code[:len(code)-1] for code in codeLines]
 	# print codeLines
 	print "Enter preset number : "
@@ -115,7 +130,22 @@ def setPreset(filename, presets):
 		fp = open(filename,'w')
 		for c in codeLines:
 			fp.write(c)
+		fp.close()
 		print "Code has been swapped"
+
+		# Changing the preset number
+		f = open('presets/%s.preset'%(filename),'r')
+		presetCodeLines = f.readlines()
+		presetCodeLines[1] = '#PREV='+str(presetNumber)+'\n'
+		f.close()
+
+		f = open('presets/%s.preset'%(filename),'w')
+		for c in presetCodeLines:
+			f.write(c)
+		f.close()
+
+		print presetCodeLines
+
 		# print presets[presetNumber].editline
 		# print codeLines
 
@@ -123,6 +153,7 @@ def setPreset(filename, presets):
 def addPreset(filename):
     
     # get the list of presets for the filename
+    print 'step4'
     presetList = checkFile(filename)
 
     if len(presetList) == 0:
@@ -143,17 +174,22 @@ def addPreset(filename):
     f.write('#PNO=%d\n'%pno)
     f.write('#LINE=%d\n'%lineNo)
     for c in code:
-    	f.write('+%s\n'%c)
+    	f.write('++%s\n'%c)
     print "Done!"
 
 
-def removePreviousPreset(code,presets):
+def removePreviousPreset(code,presets,previousPreset):
 	""" This function removes the code swapped in by the previous function"""
-	if previousPreset  <= -1:
+	print previousPreset
+	if previousPreset > 0:
 		p = presets[previousPreset-1]
 		length = p.getNumLines()
+		print 'length = ',length	
 		line = p.getStartLine()
-		code[line:line+length] = ''
+		code[line-1:line] = '\n'
+		code[line:line+length] = '\n'
+		print 'i came here'
+		print code
 
 	return code
 
