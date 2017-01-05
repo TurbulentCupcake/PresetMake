@@ -46,12 +46,13 @@ if option not in ['-v','-s','-a','-h']:
 # check if the preset for file exists in our 
 # our presets folder. the checkfile function
 # returns the presets if the presets for the file exists.
-print 'step1'
+# print 'step1'
 presets = fc.checkFile(filename)
 
 if option == '-v': #view presets
 	
 	if not presets:
+		print 'No Presets Avaliable'
 		exit(0)
 
 	for preset in presets:
